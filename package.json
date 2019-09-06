@@ -4,7 +4,15 @@
   "description": "A Typescript scaffolding for an API project using PostgreSQL, Restify, and Winston",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p .",
+    "build:live": "nodemon --ext ts --watch ./src --exec ts-node -r tsconfig-paths/register src/index.ts",
+    "build:prod": "ts-node -r tsconfig-paths/register src/index.ts",
+    "env:dev": "cp -r ./src/environments/environment.local.ts ./src/environments/environment.ts",
+    "env:prod": "cp -r ./src/environments/environment.prod.ts ./src/environments/environment.ts",
+    "start": "npm run env:dev && npm run build:live",
+    "start:prod": "npm run env:prod && npm run build:prod",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -17,7 +25,16 @@
   },
   "homepage": "https://github.com/johnathanesanders/typescript-api-scaffolding#readme",
   "devDependencies": {
-    "tsc-node": "0.0.3",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.4",
+    "@types/pg": "^7.11.1",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.2",
+    "ts-node": "^8.3.0",
+    "tsconfig-paths": "^3.8.0",
     "typescript": "^3.6.2"
+  },
+  "dependencies": {
+    "pg": "^7.12.1"
   }
 }
