@@ -1,0 +1,23 @@
+{
+  "name": "typescript-api-scaffolding",
+  "version": "1.0.0",
+  "description": "A Typescript scaffolding for an API project using PostgreSQL, Restify, and Winston",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnathanesanders/typescript-api-scaffolding.git"
+  },
+  "author": "Johnathan Sanders",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/johnathanesanders/typescript-api-scaffolding/issues"
+  },
+  "homepage": "https://github.com/johnathanesanders/typescript-api-scaffolding#readme",
+  "devDependencies": {
+    "tsc-node": "0.0.3",
+    "typescript": "^3.6.2"
+  }
+}
