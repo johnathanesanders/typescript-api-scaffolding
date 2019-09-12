@@ -1,3 +1,4 @@
 /node_modules/
 /dist/
 /src/environments/environment.local.ts
+/src/environments/environment.ts
