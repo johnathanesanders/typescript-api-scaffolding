@@ -31,21 +31,21 @@ export class ElementAtPath {
  * @param {string} directory - The path below the calling directory in which to search
  * @returns {Promise<ElementAtPath[]} - Thenable/Awaitable array of names and paths
  */
-export const elementsAtPath = async (directory: string): Promise<ElementAtPath[]> => {
+export const elementsAtPath = async (directory: string, pattern?: RegExp): Promise<ElementAtPath[]> => {
     const pathArray: ElementAtPath[] = [];
 
-    fs.readdir(`${directory}`, async (error, items) => {
-        if (error) return Promise.reject(error);
-        
+    try {
+        const items = fs.readdirSync(`${directory}`);
         await asyncForEach(items, async (item: string) => {
             const elementAtPath: ElementAtPath = {
-                name: item.split(/(\.adapter\.ts)/)[0], 
+                name: item.split(pattern ? pattern : null)[0], 
                 path: `${directory}/${item}`
             }
             pathArray.push(elementAtPath);
         });
-        
-    });
-    console.log(pathArray);
-    return Promise.resolve(pathArray);
+        return Promise.resolve(pathArray);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+    
 }

@@ -25,26 +25,16 @@ export enum DATATYPES {
 
 export interface IDatabaseAdapter {
     executeTransaction<T>(transaction: PreparedStatement[]): Promise<T[]>,
-    query<T>(statement: PreparedStatement): Promise<any>
+    query<T>(statement: PreparedStatement): any
 }
 
 export class PreparedStatement {
     private readonly query: string[];
+    public values: any[];
+    private _step: string;
 
     constructor(query: string[], values: any[]) {
         this.query = query;
-        this.values = values;
-    }
-
-    get text() {
-        return this.query.reduce((prev, curr, i) => prev + '$' + i + curr);
-    }
-
-    get values() {
-        return this.values;
-    }
-
-    set values(values: any[]) {
         this.values = values;
     }
 
@@ -57,10 +47,20 @@ export class PreparedStatement {
         }
         return this;
     }
+    
+    get step() {
+        return this._step;
+    }
+
+    setStep(step: string): void {
+        this._step = step;
+    }
+
+    get text() {
+        return this.query.reduce((prev, curr, i) => prev + '$' + i + curr);
+    }
 }
 
 export function Prepare(query: any, ..._values: any[]): PreparedStatement {
-    const queryLength = query.length;
-    const sliced = queryLength > 1 ? query.slice(0, queryLength - 1) : query;
-    return new PreparedStatement(sliced, Array.from(arguments).slice(1));
+    return new PreparedStatement(query, Array.from(arguments).slice(1));
 }
