@@ -1,20 +1,23 @@
 import { Server } from 'restify';
-import { Errors } from 'restify-errors';
 
 export interface IRoute {
     applyRoutes(server: Server): void;
 }
 
 export interface IPreparedError {
-    code: any;
-    message: any;
+    content: PreparedErrorContent;
     status: number;
 }
 
+export class PreparedErrorContent {
+    code: any;
+    message?: any;
+}
+
 export class PreparedError implements IPreparedError{
-    public code: any;
-    public message: any;
+    public content: PreparedErrorContent;
     public status: number;
+
 
     constructor(private error: any) {
         this.error = this.prepareError(error);
@@ -25,15 +28,16 @@ export class PreparedError implements IPreparedError{
      * @param {any} error - The error in which to process
      * @returns {Promise<any>} The prepared error to return to the REST caller
      */
-    public prepareError(error: any): any {
-        let responseCode: number;
-        let responseMessage: string;
+    public prepareError(error: any): IPreparedError {
+        
         let responseError: IPreparedError = {
             status: 404,
-            code: responseCode,
-            message: responseMessage
+            content: {
+                code: error.code,
+                message: error.message
+            }
         }
-        return Promise.resolve(responseError);
+        return responseError;
     }
 }
 

@@ -29,59 +29,40 @@ export interface IDatabaseAdapter {
 }
 
 export class PreparedStatement {
-    private strings: string[];
-    public values: any[];
-    private _step: string;
-    private bind: any[];
 
     constructor(strings: string[], values: any[]) {
         this.strings = strings;
         this.values = values;
     }
 
-    append(input: PreparedStatement | string): PreparedStatement {
-
+    public append(input: PreparedStatement | string | number): this {
+        
         /** Since this.strings is a global and therefore soooo immutable, copy that dude... */
-        let workingQuery: string[] = Array.from(this.strings);
+        let working: string[] = Array.from(this.strings);
         if (input instanceof PreparedStatement) {
-            workingQuery.push(...input.query);
+            working[working.length -1] += input.strings[0];
+            working.push.apply(working, input.strings.slice(1));
             this.values.push.apply(this.values, input.values);
         } else {
-            workingQuery[this.query.length -1] += input;
+            working[working.length -1] += input;
         }
-        this.strings = workingQuery;
-        return this;
-    }
-    
-    get query() {
-        return this.bind ? this.text : this.strings.join('?');
-    }
-
-    get step() {
-        return this._step;
-    }
-
-    useBind(value: any): any {
-        if (value === undefined) {
-            value = true;
-        }
-        if (value && !this.bind) {
-            this.bind = this.values;
-            delete this.values;
-        } else if (!value && this.bind) {
-            this.values = this.bind;
-            delete this.bind;
-        }
+        this.strings = working;
         return this;
     }
 
-    setStep(step: string): void {
-        this._step = step;
+    public name: string;
+    public step: string;
+    private strings: string[];
+
+    public get sql(): string {
+        return this.strings.join('?');
     }
 
-    get text() {
-        return this.strings.reduce((prev, curr, i) => prev + '$' + i + curr);
+    public get text(): string {
+        return this.strings.reduce((previous, current, index) => previous + '$' + index + current);
     }
+
+    public values: any[]; 
 }
 
 export class ReadResult {
