@@ -16,5 +16,6 @@ export const Environment: any = {
         debug: false,
         level: 'info'
     },
+    httpListen: 8443,
     namespace: 'nubilo.typescript-scaffolding'
 }

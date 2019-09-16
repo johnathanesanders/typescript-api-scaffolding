@@ -12,7 +12,7 @@ export class DatabaseService {
                 await this.selectAdapter(adapter);
                 resolve(undefined);
             } catch (error) {
-                //console.error(error);
+                console.error(error);
                 process.exit(0);
             }
         });

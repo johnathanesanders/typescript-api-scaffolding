@@ -16,5 +16,6 @@ export const Environment: any = {
         debug: process.env.ERROR_DEBUG,
         level: process.env.ERROR_LEVEL
     },
+    httpPort: process.env.HTTP_LISTEN,
     namespace: process.env.NAMESPACE
 }

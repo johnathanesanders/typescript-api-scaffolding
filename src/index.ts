@@ -1,14 +1,21 @@
 import { DatabaseService } from '@app/common/database/database.service';
-import { Prepare, PreparedStatement } from '@app/common/database/database';
+import { RestService } from '@app/common/rest/rest.service';
 
-const databaseService = new DatabaseService('postgresql');
+const main = async () => {
+    try {
+        /** Start data service */
+        const databaseService = new DatabaseService('postgresql');
+        await databaseService.ready;
 
-databaseService.ready.then(async () => {
-    let transaction: PreparedStatement[] = [];
-    const statement = Prepare`SELECT * from t_foo`;
-    let result = await databaseService.readOperation<any>(statement);
-    console.log(result.rows);
-}).catch((error) => {
-    console.log(error);
-    process.exit(0);
-});
+        /** Start REST HTTP service */
+        const restService = new RestService();
+        await restService.ready;
+
+    } catch (error) {
+        console.log(error);
+        process.exit(0);
+    }
+}
+
+main();
+

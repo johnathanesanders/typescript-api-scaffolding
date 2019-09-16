@@ -29,27 +29,50 @@ export interface IDatabaseAdapter {
 }
 
 export class PreparedStatement {
-    private readonly query: string[];
+    private strings: string[];
     public values: any[];
     private _step: string;
+    private bind: any[];
 
-    constructor(query: string[], values: any[]) {
-        this.query = query;
+    constructor(strings: string[], values: any[]) {
+        this.strings = strings;
         this.values = values;
     }
 
     append(input: PreparedStatement | string): PreparedStatement {
+
+        /** Since this.strings is a global and therefore soooo immutable, copy that dude... */
+        let workingQuery: string[] = Array.from(this.strings);
         if (input instanceof PreparedStatement) {
-            this.query.push(...input.query);
-            this.query.push.apply(this.values, input.values);
+            workingQuery.push(...input.query);
+            this.values.push.apply(this.values, input.values);
         } else {
-            this.query[this.query.length -1] += input;
+            workingQuery[this.query.length -1] += input;
         }
+        this.strings = workingQuery;
         return this;
     }
     
+    get query() {
+        return this.bind ? this.text : this.strings.join('?');
+    }
+
     get step() {
         return this._step;
+    }
+
+    useBind(value: any): any {
+        if (value === undefined) {
+            value = true;
+        }
+        if (value && !this.bind) {
+            this.bind = this.values;
+            delete this.values;
+        } else if (!value && this.bind) {
+            this.values = this.bind;
+            delete this.bind;
+        }
+        return this;
     }
 
     setStep(step: string): void {
@@ -57,8 +80,12 @@ export class PreparedStatement {
     }
 
     get text() {
-        return this.query.reduce((prev, curr, i) => prev + '$' + i + curr);
+        return this.strings.reduce((prev, curr, i) => prev + '$' + i + curr);
     }
+}
+
+export class ReadResult {
+    rows: any[];
 }
 
 export function Prepare(query: any, ..._values: any[]): PreparedStatement {

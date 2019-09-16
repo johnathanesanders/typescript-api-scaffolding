@@ -33,10 +33,14 @@ export class PostgresqlAdapter implements IDatabaseAdapter {
                 this.loggingService.writeLog('warn', 'PostgreSQL', {code: 'EUNKNOWN', message: 'PostgreSQL connection encountered an unknown condition. Reconnection attempts are uncertain.'}, client);
             }
         });
-           
 
     }
 
+    /**
+     * Executes an array of prepared SQL queries against a PostgreSQL pool, rolling back on failure.
+     * @param {PreparedStatement[]} transaction - An array of prepared SQL statements to execute
+     * @return {Promise<T[]>}
+     */
     public async executeTransaction<T>(transaction: PreparedStatement[]): Promise<T[]> {
         const result: T[] = [];
         let transactionError: any;
@@ -102,6 +106,8 @@ export class PostgresqlAdapter implements IDatabaseAdapter {
                 return CODES.EINVALIDVALUE;
             case '42703':
                 return CODES.ECRITICALDATABASE;
+            case '42P01':
+                return CODES.EINVALIDVALUE;
             case 'ENOTFOUND': 
                 return CODES.ENOTFOUND;
             case 'EDUPLICATE':
