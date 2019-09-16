@@ -19,13 +19,22 @@ export class FooRoute implements IRoute {
         server.get(`${this.basePath}/:bar`, async (request: Request, response: Response, next: Next) => {
             try {
                 const result = await this.fooService.getBar<Foo>(request.params.bar);
-                response.send(result);
+                response.send(200, result);
             } catch (error) {
                 const responseError: IPreparedError = new PreparedError(error);
-                response.status(responseError.status);
-                response.statusMessage();
+                response.send(responseError.status, responseError.content);
             }
-            response.send(`Hello World!`);
+            next();
+        });
+
+        server.post(`${this.basePath}`, async (request: Request, response: Response, next: Next) => {
+            try {
+                const result = await this.fooService.createBar(request.body.bar);
+                response.send(201, result);
+            } catch (error) {
+                const responseError: IPreparedError = new PreparedError(error);
+                response.send(responseError.status, responseError.content);
+            }
             next();
         });
     }
